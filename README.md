@@ -10,7 +10,7 @@ Configured NGINX server for deploy with Laravel 5.x based projects
 
 ## Supported tags and respective `Dockerfile` links
 
-- [`5.8-php7.3.13`, `latest`](https://github.com/agomezguru/nginx)
+- [`laravel-5x`, `latest`](https://github.com/agomezguru/nginx)
 
 ## How to use this image
 
