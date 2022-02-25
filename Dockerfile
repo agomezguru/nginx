@@ -18,7 +18,7 @@ ENV PHP_CONTAINER_NAME  php
 # Copy my own configured all purpose NGINX starter version
 COPY ./nginx.conf /etc/nginx/nginx.conf
 
-# Copy optimized version NGINX template for use with Laravel 5.x
+# Copy optimized version NGINX template for use with Laravel 8.x
 COPY ./laravel.conf.template /etc/nginx/conf.d/laravel.conf.template
 
 COPY docker-entrypoint.sh /
@@ -29,5 +29,5 @@ ENTRYPOINT ["/docker-entrypoint.sh"]
 # CMD ["nginx", "-t]
 CMD ["nginx", "-g", "daemon off;"]
 
-# docker build . --tag agomezguru/nginx:laravel-5x
+# docker build . --tag agomezguru/nginx:laravel-8x
 # End of file
