@@ -1,6 +1,6 @@
 # Quick reference, nginx
 
-Configured NGINX server for deploy with Laravel 5.x based projects
+Configured NGINX server for deploy with Laravel 8.x based projects
 
 - **Maintained by**:
 [agomezguru](https://github.com/agomezguru)
@@ -10,11 +10,11 @@ Configured NGINX server for deploy with Laravel 5.x based projects
 
 ## Supported tags and respective `Dockerfile` links
 
-- [`laravel-5x`, `latest`](https://github.com/agomezguru/nginx)
+- [`laravel-8x`, `latest`](https://github.com/agomezguru/nginx)
 
 ## How to use this image
 
-The intent of this image is always being together use with a Laravel 5.x docker container with a simple `Dockerfile` (in `/host/path/`) like this one:
+The intent of this image is always being together use with a Laravel 8.x docker container with a simple `Dockerfile` (in `/host/path/`) like this one:
 
 ```bash
 cat <<EOF > docker-compose.yml
@@ -26,7 +26,7 @@ volumes:
 
 services:
   web:
-    image: agomezguru/nginx:laravel-5x
+    image: agomezguru/nginx:laravel-8x
     ports:
       - "$outsidePort:80"
     environment:
@@ -42,7 +42,7 @@ services:
       - $env-network
 
   php:
-    image: agomezguru/laravel:5.8-php7.3.13
+    image: agomezguru/laravel:8.x-php7.4.x
     volumes:
       - ../code:/srv
       - my-public:/srv/public
@@ -65,7 +65,7 @@ In the above example you can see this in action:
 
 ```yaml
 web:
-  image: agomezguru/nginx:laravel-5x
+  image: agomezguru/nginx:laravel-8x
   ports:
     - "$outsidePort:80"
   environment:
