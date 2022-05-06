@@ -7,6 +7,10 @@ server {
     error_log  /var/log/nginx/${LOG_NAME}.error.log;
     access_log /var/log/nginx/${LOG_NAME}.access.log;
 
+    # Set client body size to 512M
+    # Resolve problem with large file uploads.
+    client_max_body_size 512M;
+
     location = /favicon.ico {
         log_not_found off;
         access_log off;
@@ -65,6 +69,8 @@ server {
 
         fastcgi_intercept_errors on;
 
+        # Resolve Nginx upstream sent too big header
+        # Ref.: https://serverok.in/nginx-upstream-sent-too-big-header
         fastcgi_buffers 16 16k;
         fastcgi_buffer_size 32k;
 
