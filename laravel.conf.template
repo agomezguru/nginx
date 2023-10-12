@@ -1,86 +1,87 @@
 server {
 
-    server_name ${HOST_NAME};
-    root ${HTTP_ROOT_DIR};
+  listen 80;
+  server_name ${HOST_NAME};
+  root ${HTTP_ROOT_DIR};
 
-    access_log ${LOG_STATUS}; # Remember turn off in production.
-    error_log  /var/log/nginx/${LOG_NAME}.error.log;
-    access_log /var/log/nginx/${LOG_NAME}.access.log;
+  access_log ${LOG_STATUS}; # Remember turn off in production.
+  error_log  /var/log/nginx/${LOG_NAME}.error.log; # logs/${LOG_NAME}.error.log;
+  access_log /var/log/nginx/${LOG_NAME}.access.log; # logs/${LOG_NAME}.access.log;
 
-    # Set client body size to 512M
-    # Resolve problem with large file uploads.
-    client_max_body_size 512M;
+  # Set client body size to in MB
+  # Resolve problem with large file uploads.
+  client_max_body_size ${CLIENT_BODY_SIZE};
 
-    location = /favicon.ico {
-        log_not_found off;
-        access_log off;
-    }
+  location = /favicon.ico {
+    log_not_found off;
+    access_log off;
+  }
 
-    location = /robots.txt {
-        allow all;
-        log_not_found off;
-        access_log off;
-    }
+  location = /robots.txt {
+    allow all;
+    log_not_found off;
+    access_log off;
+  }
 
-    # Very rarely should these ever be accessed outside of your lan
-    location ~* \.(txt|log)$ {
-        allow 192.168.0.0/16;
-        deny all;
-    }
+  # Very rarely should these ever be accessed outside of your lan
+  location ~* \.(txt|log)$ {
+    allow 192.168.0.0/16;
+    deny all;
+  }
 
-    # Block access to "hidden" files and directories whose names begin with a
-    # period. This includes directories used by version control systems such
-    # as Subversion or Git to store control files.
-    location ~ (^|/)\. {
-        return 403;
-    }
+  # Block access to "hidden" files and directories whose names begin with a
+  # period. This includes directories used by version control systems such
+  # as Subversion or Git to store control files.
+  location ~ (^|/)\. {
+    return 403;
+  }
 
-    location / {
-        try_files $uri /index.php?$query_string;
-    }
+  location / {
+    try_files $uri /index.php?$query_string;
+  }
 
-    location @rewrite {
-        rewrite ^/(.*)$ /index.php?q=$1;
-    }
+  location @rewrite {
+    rewrite ^/(.*)$ /index.php?q=$1;
+  }
 
-    # Don't allow direct access to PHP files in the vendor directory.
-    location ~ /vendor/.*\.php$ {
-        deny all;
-        return 404;
-    }
+  # Don't allow direct access to PHP files in the vendor directory.
+  location ~ /vendor/.*\.php$ {
+    deny all;
+    return 404;
+  }
 
-    location ~ '\.php$' {
-        fastcgi_split_path_info ^(.+?\.php)(|/.*)$;
-        include fastcgi_params;
+  location ~ '\.php$' {
+    fastcgi_split_path_info ^(.+?\.php)(|/.*)$;
+    include fastcgi_params;
 
-        # Block httpoxy attacks. See https://httpoxy.org/.
-        fastcgi_param HTTP_PROXY "";
-        
-        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
-        fastcgi_param PATH_INFO $fastcgi_path_info;
-        fastcgi_param QUERY_STRING $query_string;
-        
-        # Este parametro permite ver a obtener la IP real del cliente. MUY IMPORTANTE
-        fastcgi_param REMOTE_ADDR $http_x_real_ip;
+    # Block httpoxy attacks. See https://httpoxy.org/.
+    fastcgi_param HTTP_PROXY "";
+    
+    fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+    fastcgi_param PATH_INFO $fastcgi_path_info;
+    fastcgi_param QUERY_STRING $query_string;
+      
+    # VERY IMPORTANT. This parameter gets the real IP of client.
+    fastcgi_param REMOTE_ADDR $http_x_real_ip;
 
-        # Establecer el valor de este parametro en cada uno de los diferentes ambientes
-        # en el ambiente local para desarrollo no es necesario establecerlo.
-        fastcgi_param APPLICATION_ENV ${DEPLOYMENT_STAGE}; # Otras opciones: develop, qa, staging, production
+    # Set this parameter value for all needed environments
+    # In local env for development is not needed to set up.
+    fastcgi_param APPLICATION_ENV ${DEPLOYMENT_STAGE}; # Other options are: development, qa, staging, production
 
-        fastcgi_intercept_errors on;
+    fastcgi_intercept_errors on;
 
-        # Resolve Nginx upstream sent too big header
-        # Ref.: https://serverok.in/nginx-upstream-sent-too-big-header
-        fastcgi_buffers 16 16k;
-        fastcgi_buffer_size 32k;
+    # Resolve Nginx upstream sent too big header
+    # Ref.: https://serverok.in/nginx-upstream-sent-too-big-header
+    fastcgi_buffers ${BUFFERS} ${BUFFERS}k;
+    fastcgi_buffer_size ${BUFFER_SIZE}k;
 
-        # PHP 7 socket location.
-        fastcgi_pass ${PHP_CONTAINER_NAME}:9000;
-    }
+    # PHP 7 socket location.
+    fastcgi_pass ${PHP_CONTAINER_NAME}:9000;
+  }
 
-    location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|pdf)$ {
-        try_files $uri @rewrite;
-        expires max;
-        log_not_found off;
-    }
+  location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|pdf)$ {
+    try_files $uri @rewrite;
+    expires max;
+    log_not_found off;
+  }
 }
