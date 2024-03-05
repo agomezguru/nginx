@@ -2,17 +2,16 @@
 #   This container is intended to be configured for serve PHP projects with NGINX.
 # ====================================================================================
 
-# Use an official build NGINX runtime as a parent image
-# Ref.: https://hub.docker.com/_/nginx/
-FROM nginx:latest
-
 # Use an NGINX Chainguard Image runtime as a parent image
 # Ref.: https://edu.chainguard.dev/chainguard/chainguard-images/reference/nginx/
-# FROM cgr.dev/chainguard/nginx:latest
+FROM cgr.dev/chainguard/nginx:latest
 
 LABEL maintainer "Alejandro G. Lagunas <alagunas@coati.com.mx>"
 
 # Set default values for the NGINX config file.
+# Note from parent image maintainers: Environment Variable Substitution 
+# The Docker official image has support for setting environment variables that get substitued into
+# the config file. Currently we do not have support for this, but are looking into options.
 ENV HOST_NAME           agomez.guru
 ENV HTTP_ROOT_DIR       /srv/public
 ENV LOG_STATUS          off
